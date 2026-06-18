@@ -80,6 +80,7 @@ function PurchasedCard({ item }: { item: PItem }) {
   const step = Math.min(item.step, journey.length - 1);
   const needsToken = item.source === "online" && !item.tokenPaid;
   const sellerCallsUnlocked = car.type === "ocb" && item.tokenPaid;
+  const ownedSupportUnlocked = car.type === "owned" && item.tokenPaid;
 
   const payToken = () => {
     dispatch({ type: "PAY_TOKEN", carId: car.id });
@@ -91,6 +92,25 @@ function PurchasedCard({ item }: { item: PItem }) {
     dispatch({ type: "ADVANCE_PIPELINE", carId: car.id });
     const next = journey[Math.min(step + 1, journey.length - 1)];
     agents.toast("Concierge", `${car.model}: ${next} updated.`);
+  };
+
+  const openAgentSupport = () => {
+    agents.say(
+      "Concierge",
+      `${car.make} ${car.model} is CARS24 owned stock. I can help with token status, stocked-in ETA, gate pass, documentation and stock-out timeline.`,
+      [{ label: "Human support", action: openHumanSupport, primary: true }],
+      true
+    );
+  };
+
+  const openHumanSupport = () => {
+    agents.say(
+      "Support",
+      `Connecting you to CARS24 support for ${car.make} ${car.model}. No seller coordination is needed on owned stock.`,
+      undefined,
+      true
+    );
+    agents.toast("Support", `${car.model}: human support requested.`);
   };
 
   return (
@@ -182,6 +202,41 @@ function PurchasedCard({ item }: { item: PItem }) {
               <div className="seller-contact-locked">
                 <Icon name="lock" size={13} />
                 Pay token to start seller communication
+              </div>
+            )}
+          </div>
+        )}
+
+        {car.type === "owned" && (
+          <div className={`owned-support-card ${ownedSupportUnlocked ? "owned-support-card--unlocked" : ""}`}>
+            <div className="flex items-center gap-2.5">
+              <div className="owned-support-avatar">
+                <Icon name="bolt" size={16} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="text-label-2-semibold text-primary">CARS24 Concierge support</div>
+                <div className="text-label-4-regular text-secondary">
+                  {ownedSupportUnlocked
+                    ? "AI agent and human support for documents, gate pass and stock-out."
+                    : "Unlocks after token payment. No seller chat on CARS24 owned stock."}
+                </div>
+              </div>
+            </div>
+            {ownedSupportUnlocked ? (
+              <div className="owned-support-actions">
+                <button className="press owned-support-action owned-support-action--agent" onClick={openAgentSupport} type="button">
+                  <Icon name="bolt" size={15} />
+                  Ask agent
+                </button>
+                <button className="press owned-support-action" onClick={openHumanSupport} type="button">
+                  <Icon name="phone" size={15} />
+                  Human support
+                </button>
+              </div>
+            ) : (
+              <div className="owned-support-locked">
+                <Icon name="lock" size={13} />
+                Pay token to unlock CARS24 support
               </div>
             )}
           </div>

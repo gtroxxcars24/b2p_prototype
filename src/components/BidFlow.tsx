@@ -59,6 +59,7 @@ export function BidProvider({ children }: { children: React.ReactNode }) {
   const auctionTimeLeft = "18m 24s";
   const autoSteps = car ? Math.max(0, Math.floor((autoMax - amount) / step1)) : 0;
   const increaseNowAmount = amount + step1;
+  const activeBidders = car ? activeBidderCount(car, state.bids[car.id] != null, step) : 0;
 
   function win(c: Car, finalAmount: number, auto = false) {
     dispatch({ type: "SET_WON", carId: c.id });
@@ -166,6 +167,19 @@ export function BidProvider({ children }: { children: React.ReactNode }) {
                     <span>Live auction</span>
                   </div>
                   <strong>Ends in {auctionTimeLeft}</strong>
+                </div>
+
+                <div className="bid-market-grid mb-3">
+                  <div className="bid-market-card">
+                    <div className="bid-market-label">Current highest bid</div>
+                    <div className="bid-market-value">{fmtL(highest)}</div>
+                    <div className="bid-market-sub">{fmtRs(highest)}</div>
+                  </div>
+                  <div className="bid-market-card bid-market-card--active">
+                    <div className="bid-market-label">Active bidders</div>
+                    <div className="bid-market-value">{activeBidders}</div>
+                    <div className="bid-market-sub">{step === "placed" ? "Including you" : "Live right now"}</div>
+                  </div>
                 </div>
 
                 {step === "placed" && (
@@ -341,6 +355,14 @@ function TrustLine({ text }: { text: string }) {
       <span className="text-label-3-medium text-primary">{text}</span>
     </div>
   );
+}
+
+function activeBidderCount(car: Car, hasDealerBid: boolean, step: Step) {
+  const base = car.demand === "High" ? 17 : car.demand === "Medium" ? 11 : 7;
+  const sourceBoost = car.type === "owned" ? 2 : 0;
+  const dealerBoost = hasDealerBid ? 1 : 0;
+  const rivalBoost = step === "outbid" ? 1 : 0;
+  return base + sourceBoost + dealerBoost + rivalBoost;
 }
 
 function WonCard({ car, amount, auto, onPayToken, onClose }: { car: Car; amount: number; auto?: boolean; onPayToken: () => void; onClose: () => void }) {

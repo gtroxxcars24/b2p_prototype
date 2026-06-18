@@ -1007,6 +1007,79 @@ body {
   font-weight: 750;
 }
 
+.owned-support-card {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgba(14, 124, 102, 0.14), transparent 52%),
+    linear-gradient(180deg, #FFFFFF 0%, #F2FFF9 100%);
+  border: 1px solid rgba(14, 124, 102, 0.2);
+}
+
+.owned-support-card--unlocked {
+  box-shadow: 0 12px 24px rgba(14, 124, 102, 0.1);
+}
+
+.owned-support-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  background: linear-gradient(135deg, #17B890 0%, #0E7C66 100%);
+  box-shadow: 0 8px 16px rgba(14, 124, 102, 0.22);
+}
+
+.owned-support-actions,
+.owned-cdp-support {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.owned-support-action,
+.owned-cdp-support-action {
+  min-width: 0;
+  height: 38px;
+  border: 1px solid rgba(14, 124, 102, 0.22);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #0E7C66;
+  background: #fff;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 850;
+}
+
+.owned-support-action--agent,
+.owned-cdp-support-action--agent {
+  color: #fff;
+  background: linear-gradient(180deg, #17B890 0%, #0E7C66 100%);
+  border: none;
+  box-shadow: 0 8px 16px rgba(14, 124, 102, 0.22);
+}
+
+.owned-support-locked {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background: rgba(14, 124, 102, 0.1);
+  font-size: 12px;
+  font-weight: 750;
+}
+
 .procurement-status-card {
   margin: 2px 0 12px;
   padding: 13px;
@@ -1084,6 +1157,52 @@ body {
   font-size: 14px;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.bid-market-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.bid-market-card {
+  min-width: 0;
+  padding: 12px;
+  border-radius: 16px;
+  background:
+    radial-gradient(95% 120% at 100% 0%, rgba(71, 54, 254, 0.1), transparent 58%),
+    #FFFFFF;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+}
+
+.bid-market-card--active {
+  background:
+    radial-gradient(95% 120% at 100% 0%, rgba(14, 124, 102, 0.16), transparent 58%),
+    #FFFFFF;
+  border-color: rgba(14, 124, 102, 0.22);
+}
+
+.bid-market-label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 760;
+}
+
+.bid-market-value {
+  margin-top: 5px;
+  color: var(--text-primary);
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 950;
+}
+
+.bid-market-sub {
+  margin-top: 3px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 700;
 }
 
 .bid-status-card {

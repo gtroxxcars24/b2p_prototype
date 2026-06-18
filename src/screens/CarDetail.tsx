@@ -26,6 +26,24 @@ export function CarDetail({ car }: { car: Car }) {
   const won = state.won.includes(car.id);
   const highest = state.highest[car.id] ?? car.currentHighest;
 
+  const openOwnedAgentSupport = () => {
+    agents.say(
+      "Concierge",
+      `${car.make} ${car.model} is CARS24 owned stock. Ask me about stocked-in ETA, documents, gate pass or stock-out status.`,
+      [{ label: "Human support", action: openOwnedHumanSupport, primary: true }],
+      true
+    );
+  };
+
+  const openOwnedHumanSupport = () => {
+    agents.say(
+      "Support",
+      `Connecting you to CARS24 human support for ${car.make} ${car.model}. Owned stock does not require seller coordination.`,
+      undefined,
+      true
+    );
+  };
+
   return (
     <div className="absolute inset-0 bg-secondary flex flex-col" style={{ zIndex: 30 }}>
       {/* header */}
@@ -195,6 +213,27 @@ export function CarDetail({ car }: { car: Car }) {
               <Icon name="lock" size={15} className="text-secondary" style={{ marginTop: 1 }} />
               <span className="text-label-4-regular text-secondary">
                 Masked identities · no number sharing · calls recorded & monitored. Ask for a guided underbody, engine bay or interior walkthrough.
+              </span>
+            </div>
+          </Section>
+        )}
+
+        {car.type === "owned" && won && (
+          <Section icon="bolt" title="CARS24 support" subtitle="Owned stock support — no seller chat needed">
+            <div className="owned-cdp-support">
+              <button className="press owned-cdp-support-action owned-cdp-support-action--agent" onClick={openOwnedAgentSupport} type="button">
+                <Icon name="bolt" size={17} />
+                Ask AI Concierge
+              </button>
+              <button className="press owned-cdp-support-action" onClick={openOwnedHumanSupport} type="button">
+                <Icon name="phone" size={17} />
+                Human support
+              </button>
+            </div>
+            <div className="flex items-start gap-2 mt-3">
+              <Icon name="shield" size={15} className="text-secondary" style={{ marginTop: 1 }} />
+              <span className="text-label-4-regular text-secondary">
+                CARS24 handles documents, gate pass and stock-out directly. No seller identity, seller chat or seller call is shown for owned stock.
               </span>
             </div>
           </Section>
