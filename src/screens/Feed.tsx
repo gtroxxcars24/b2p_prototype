@@ -467,7 +467,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
       </div>
 
       {/* top overlays */}
-      <div className="absolute" style={{ top: 152, left: 12, right: 12 }}>
+      <div className="absolute" style={{ top: 226, left: 12, right: 12 }}>
         <div className="flex items-start justify-between">
           {car.type === "owned" ? (
             <Cars24OwnedBadge />

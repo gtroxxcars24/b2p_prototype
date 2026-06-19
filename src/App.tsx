@@ -158,6 +158,19 @@ function FullscreenTopChrome() {
           <Icon name="chevron" size={13} strokeWidth={2.45} style={{ transform: "rotate(90deg)" }} />
         </button>
 
+        <div className="fullscreen-actions">
+          <button className="fullscreen-wallet press" onClick={() => setTab("purchased")} type="button">
+            <Icon name="wallet" size={15} strokeWidth={2.05} />
+            <span>{WALLET_BALANCE}</span>
+          </button>
+          <button className="fullscreen-icon-button press" onClick={() => setTab("account")} type="button">
+            <Icon name="bell" size={16} strokeWidth={2.1} />
+            <NotificationBadge count={notificationCount} />
+          </button>
+        </div>
+      </div>
+
+      <div className="fullscreen-mode-row">
         <div className="reels-mode-tabs">
           <button
             className={`reels-mode-tab ${tab === "live" ? "reels-mode-tab--active" : ""}`}
@@ -179,17 +192,6 @@ function FullscreenTopChrome() {
             type="button"
           >
             Offline
-          </button>
-        </div>
-
-        <div className="fullscreen-actions">
-          <button className="fullscreen-wallet press" onClick={() => setTab("purchased")} type="button">
-            <Icon name="wallet" size={15} strokeWidth={2.05} />
-            <span>{WALLET_BALANCE}</span>
-          </button>
-          <button className="fullscreen-icon-button press" onClick={() => setTab("account")} type="button">
-            <Icon name="bell" size={16} strokeWidth={2.1} />
-            <NotificationBadge count={notificationCount} />
           </button>
         </div>
       </div>
