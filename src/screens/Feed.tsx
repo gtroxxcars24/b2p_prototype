@@ -48,6 +48,13 @@ const LIVE_COMMENTS: Record<string, LiveComment[]> = {
   ],
 };
 
+const LIVE_COMMENT_SUGGESTIONS = [
+  "Show undercarriage",
+  "Show dents",
+  "Start engine",
+  "Show tyres",
+];
+
 function initialAuctionSeconds(id: string) {
   if (AUCTION_SECONDS[id]) return AUCTION_SECONDS[id];
   const seed = id.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
@@ -450,6 +457,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
   const [auctionSeconds, setAuctionSeconds] = useState(() => initialAuctionSeconds(car.id));
   const [reportOpen, setReportOpen] = useState(false);
   const [commentDraft, setCommentDraft] = useState("");
+  const [commentFocused, setCommentFocused] = useState(false);
   const [comments, setComments] = useState<LiveComment[]>(() => liveCommentsFor(car));
 
   const openDetail = () => push({ name: "car-detail", params: { id: car.id } });
@@ -465,12 +473,29 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
     if (!text) return;
     setComments((prev) => [...prev.slice(-4), { dealer: "You", text }]);
     setCommentDraft("");
+    setCommentFocused(false);
+  };
+
+  const askSuggestion = (text: string) => {
+    setComments((prev) => [...prev.slice(-4), { dealer: "You", text }]);
+    setCommentDraft("");
+    setCommentFocused(false);
   };
 
   useEffect(() => {
     const t = window.setInterval(() => {
       setAuctionSeconds((s) => Math.max(0, s - 1));
     }, 1000);
+    return () => window.clearInterval(t);
+  }, [car.id]);
+
+  useEffect(() => {
+    const seedComments = liveCommentsFor(car);
+    let index = 0;
+    const t = window.setInterval(() => {
+      index = (index + 1) % seedComments.length;
+      setComments((prev) => [...prev.slice(-5), seedComments[index]]);
+    }, 4200);
     return () => window.clearInterval(t);
   }, [car.id]);
 
@@ -499,7 +524,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
       style={{ height: "100%" }}
       onClickCapture={(e) => {
         const target = e.target as HTMLElement;
-        if (target.closest(".live-comments,.live-report-panel,.live-report-pip,.live-report-launch,.live-top-badges,.live-bottom-panel")) return;
+        if (target.closest(".live-comments,.live-report-panel,.live-report-pip,.live-action-rail,.live-top-badges,.live-bottom-panel")) return;
         if (target.closest("button,input,textarea,select,a")) return;
         openDetail();
       }}
@@ -524,39 +549,22 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
             <span className="live-source-pill">OCB · Consumer</span>
           )}
         </div>
+      </div>
+
+      <div className="live-action-rail">
         <button
           onClick={() => setLiked((v) => !v)}
-          className="press live-icon-action"
+          className="press live-action-button"
           type="button"
           aria-label="Save car"
         >
           <Icon name={liked ? "heart-fill" : "heart"} size={20} />
+          <span>Save</span>
         </button>
-      </div>
-
-      <button className="press live-report-launch" onClick={() => setReportOpen(true)} type="button">
-        <Icon name="doc" size={18} />
-        <span>Report</span>
-      </button>
-
-      <div className="live-comments">
-        <div className="live-comments-feed" aria-live="polite">
-          {visibleComments.map((comment, idx) => (
-            <div className="live-comment-row" key={`${comment.dealer}-${comment.text}-${idx}`}>
-              <strong>{comment.dealer}</strong>
-              <span>{comment.text}</span>
-            </div>
-          ))}
-        </div>
-        <form className="live-comment-form" onSubmit={submitComment}>
-          <Icon name="send" size={14} />
-          <input
-            value={commentDraft}
-            onChange={(e) => setCommentDraft(e.target.value)}
-            placeholder="Ask a live question"
-          />
-          <button type="submit">Ask</button>
-        </form>
+        <button className="press live-action-button" onClick={() => setReportOpen(true)} type="button">
+          <Icon name="doc" size={19} />
+          <span>Report</span>
+        </button>
       </div>
 
       <div className="live-bottom-panel">
@@ -588,6 +596,37 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
             <span>Active bidders</span>
             <strong>{activeBidders}</strong>
           </div>
+        </div>
+
+        <div className={`live-comments ${commentFocused ? "live-comments--focused" : ""}`}>
+          <div className="live-comments-feed" aria-live="polite">
+            {visibleComments.map((comment, idx) => (
+              <div className="live-comment-row" key={`${comment.dealer}-${comment.text}-${idx}`}>
+                <strong>{comment.dealer}</strong>
+                <span>{comment.text}</span>
+              </div>
+            ))}
+          </div>
+          {commentFocused && (
+            <div className="live-comment-suggestions">
+              {LIVE_COMMENT_SUGGESTIONS.map((suggestion) => (
+                <button key={suggestion} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => askSuggestion(suggestion)}>
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
+          <form className="live-comment-form" onSubmit={submitComment}>
+            <Icon name="send" size={14} />
+            <input
+              value={commentDraft}
+              onChange={(e) => setCommentDraft(e.target.value)}
+              onFocus={() => setCommentFocused(true)}
+              onBlur={() => window.setTimeout(() => setCommentFocused(false), 140)}
+              placeholder="Ask a live question"
+            />
+            <button type="submit">Ask</button>
+          </form>
         </div>
 
         {won ? (
