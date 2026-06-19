@@ -54,7 +54,7 @@ export function Assistant() {
   const unread = state.messages.filter((m) => !m.typing).length;
   const activeOverlay = stack[stack.length - 1];
   const activeCar = activeOverlay?.name === "car-detail" ? carById(activeOverlay.params?.id ?? "") : undefined;
-  const context = activeCar ? "car" : tab === "online" ? "feed" : tab === "offline" ? "offline" : "support";
+  const context = activeCar ? "car" : tab === "live" || tab === "online" ? "feed" : tab === "offline" ? "offline" : "support";
 
   const contextCopy = useMemo(() => {
     if (activeCar) {
@@ -64,10 +64,17 @@ export function Assistant() {
         placeholder: "Ask about this car",
       };
     }
+    if (tab === "live") {
+      return {
+        title: "Live auction assistant",
+        subtitle: "Search live video lots or ask for bid strategy",
+        placeholder: "Search Swift, live SUV under 10L...",
+      };
+    }
     if (tab === "online") {
       return {
-        title: "Search dealer stock",
-        subtitle: "Find cars by model, budget, grade, fuel or demand",
+        title: "Search online auctions",
+        subtitle: "Find list-style auction cars by model, budget or grade",
         placeholder: "Search Swift, SUV under 10L, automatic...",
       };
     }
@@ -282,8 +289,10 @@ export function Assistant() {
                 <div className="text-label-2-regular text-secondary text-center mt-8">
                   {activeCar
                     ? "Ask anything about this car: price, condition, history, underbody or bid strategy."
-                    : tab === "online"
-                      ? "Search the feed from here. Try owned stock, SUV under 10L, automatic, or a model name."
+                    : tab === "live"
+                      ? "Search live video auctions from here. Try owned stock, SUV under 10L, automatic, or a model name."
+                      : tab === "online"
+                        ? "Search online auction cards by model, grade, fuel, budget or demand."
                       : "Your agents will guide you here as you browse, bid and buy."}
                 </div>
               )}

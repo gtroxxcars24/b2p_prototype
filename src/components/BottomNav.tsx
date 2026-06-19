@@ -4,8 +4,9 @@ import { Icon, IconName } from "./Icon";
 import { useStore } from "../state/store";
 
 const TABS: { tab: Tab; label: string; icon: IconName }[] = [
-  { tab: "online", label: "Feed", icon: "home" },
-  { tab: "offline", label: "Auctions", icon: "gavel" },
+  { tab: "live", label: "Live", icon: "home" },
+  { tab: "online", label: "Online", icon: "gavel" },
+  { tab: "offline", label: "Offline", icon: "gavel" },
   { tab: "purchased", label: "Purchased", icon: "bag" },
   { tab: "account", label: "Account", icon: "user" },
 ];

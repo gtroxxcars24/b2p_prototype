@@ -123,9 +123,9 @@ body {
 .fullscreen-top-row {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(74px, 1fr) auto minmax(118px, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 8px 12px 62px;
   pointer-events: auto;
 }
@@ -169,7 +169,9 @@ body {
   justify-self: center;
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
   text-shadow: 0 1px 9px rgba(0, 0, 0, 0.55);
 }
 
@@ -179,7 +181,7 @@ body {
   background: transparent;
   color: rgba(255, 255, 255, 0.68);
   padding: 4px 0 8px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
   font-weight: 800;
 }
@@ -345,6 +347,250 @@ body {
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(14px);
+}
+
+.online-auctions-screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background:
+    radial-gradient(95% 54% at 50% -12%, rgba(71, 54, 254, 0.28), transparent 58%),
+    linear-gradient(180deg, #EEF3F8 0%, #F7FAFE 100%);
+}
+
+.online-auctions-scroll {
+  padding-top: 142px;
+  padding-bottom: 108px;
+}
+
+.online-list-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 22px;
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgba(71, 54, 254, 0.14), transparent 52%),
+    #FFFFFF;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+.online-list-count {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(180deg, #5A4BFF 0%, #4736FE 100%);
+  box-shadow: 0 10px 18px rgba(71, 54, 254, 0.24);
+  flex-shrink: 0;
+}
+
+.online-list-count strong,
+.online-list-count span {
+  display: block;
+  line-height: 1;
+}
+
+.online-list-count strong {
+  font-size: 21px;
+  font-weight: 950;
+}
+
+.online-list-count span {
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.78;
+}
+
+.online-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.online-search-pill {
+  height: 42px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #FFFFFF;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07);
+}
+
+.online-filter-button {
+  width: 42px;
+  height: 42px;
+  background: #FFFFFF;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07);
+}
+
+.online-filter-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #4736FE;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.online-car-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.online-car-card {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  border-radius: 22px;
+  background: #FFFFFF;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+.online-card-image {
+  position: relative;
+  height: 128px;
+  overflow: hidden;
+  border: none;
+  border-radius: 18px;
+  background: transparent;
+  padding: 0;
+}
+
+.online-timer-chip {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(8, 11, 23, 0.62);
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 850;
+  backdrop-filter: blur(8px);
+}
+
+.online-card-body {
+  min-width: 0;
+}
+
+.online-card-title {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 0;
+  text-align: left;
+  font-size: 18px;
+  line-height: 1.08;
+  font-weight: 900;
+}
+
+.online-card-bid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.online-card-bid-row > div {
+  min-width: 0;
+  padding: 8px;
+  border-radius: 14px;
+  background: #F5F8FC;
+}
+
+.online-card-bid-row span,
+.online-card-bid-row strong {
+  display: block;
+}
+
+.online-card-bid-row span {
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.online-card-bid-row strong {
+  margin-top: 4px;
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.online-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.online-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 23px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background: #EEF3F8;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.online-card-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 70px;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.online-card-report {
+  min-width: 0;
+  border: 1px solid var(--border-secondary);
+  border-radius: 999px;
+  color: var(--text-brand-base);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.online-empty-state {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 34px;
 }
 
 .service-dock {
@@ -675,7 +921,7 @@ body {
 
 .dealer-mode-switch {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
   gap: 8px;
   min-height: 50px;
@@ -697,8 +943,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 19px;
+  gap: 5px;
+  font-size: 14px;
   line-height: 1;
   font-weight: 750;
   font: inherit;
@@ -711,16 +957,16 @@ body {
 }
 
 .dealer-mode-count {
-  min-width: 25px;
-  height: 23px;
-  padding: 0 7px;
+  min-width: 21px;
+  height: 20px;
+  padding: 0 6px;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(15, 23, 42, 0.08);
   color: #64748B;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 850;
 }
 

@@ -24,7 +24,7 @@ export function Purchased() {
             Win a car online or at an auction and it lands here — with live post-procurement tracking.
           </div>
           <div className="mt-5">
-            <Button onClick={() => setTab("online")} leftIcon="home">Go to feed</Button>
+            <Button onClick={() => setTab("live")} leftIcon="home">Go to feed</Button>
           </div>
         </div>
       </div>

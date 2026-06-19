@@ -4,7 +4,7 @@ import { NavProvider, useNav, Overlay } from "./state/nav";
 import { BidProvider } from "./components/BidFlow";
 import { Assistant, Toasts } from "./components/Assistant";
 import { Icon, IconName } from "./components/Icon";
-import { Feed } from "./screens/Feed";
+import { Feed, OnlineAuctions } from "./screens/Feed";
 import { CarDetail } from "./screens/CarDetail";
 import { Offline, AuctionDetail, BookVisit, Handoff, Candidates } from "./screens/Offline";
 import { SellerChat } from "./screens/SellerChat";
@@ -62,7 +62,7 @@ function AppHeader() {
   const { state } = useStore();
   const notificationCount = Math.max(1, state.purchased.length);
   const serviceTiles: { title: string; icon: IconName; active?: boolean; onClick?: () => void; tone: string }[] = [
-    { title: "Car\nAuction", icon: "gavel", active: tab === "online" || tab === "offline", onClick: () => setTab("online"), tone: "auction" },
+    { title: "Car\nAuction", icon: "gavel", active: tab === "live" || tab === "online" || tab === "offline", onClick: () => setTab("live"), tone: "auction" },
     { title: "Give\nLoans", icon: "car", tone: "loans" },
     { title: "Check\nCIBIL", icon: "gauge", tone: "cibil" },
     { title: "Car\nReport", icon: "doc", tone: "report" },
@@ -113,12 +113,20 @@ function AppHeader() {
       <div className="dealer-mode-tray">
         <div className="dealer-mode-switch">
           <button
-            className={`dealer-mode-option ${tab === "online" ? "dealer-mode-option--active" : ""} press`}
-            onClick={() => setTab("online")}
+            className={`dealer-mode-option ${tab === "live" ? "dealer-mode-option--active" : ""} press`}
+            onClick={() => setTab("live")}
             type="button"
           >
             <span>Live</span>
             <span className="dealer-mode-count">10</span>
+          </button>
+          <button
+            className={`dealer-mode-option ${tab === "online" ? "dealer-mode-option--active" : ""} press`}
+            onClick={() => setTab("online")}
+            type="button"
+          >
+            <span>Online</span>
+            <span className="dealer-mode-count">18</span>
           </button>
           <button
             className={`dealer-mode-option ${tab === "offline" ? "dealer-mode-option--active" : ""} press`}
@@ -152,11 +160,18 @@ function FullscreenTopChrome() {
 
         <div className="reels-mode-tabs">
           <button
+            className={`reels-mode-tab ${tab === "live" ? "reels-mode-tab--active" : ""}`}
+            onClick={() => setTab("live")}
+            type="button"
+          >
+            Live
+          </button>
+          <button
             className={`reels-mode-tab ${tab === "online" ? "reels-mode-tab--active" : ""}`}
             onClick={() => setTab("online")}
             type="button"
           >
-            Live
+            Online
           </button>
           <button
             className={`reels-mode-tab ${tab === "offline" ? "reels-mode-tab--active" : ""}`}
@@ -198,7 +213,7 @@ function UtilityTopChrome() {
           <Icon name="chevron" size={13} strokeWidth={2.45} style={{ transform: "rotate(90deg)" }} />
         </button>
 
-        <button className="utility-auction-pill press" onClick={() => setTab("online")} type="button">
+        <button className="utility-auction-pill press" onClick={() => setTab("live")} type="button">
           <Icon name="gavel" size={14} strokeWidth={2.2} />
           Auction
         </button>
@@ -221,7 +236,7 @@ function UtilityTopChrome() {
 function ServiceDock() {
   const { tab, setTab } = useNav();
   const items: { label: string; icon: IconName; active?: boolean; onClick?: () => void }[] = [
-    { label: "Auction", icon: "gavel", active: tab === "online" || tab === "offline", onClick: () => setTab("online") },
+    { label: "Auction", icon: "gavel", active: tab === "live" || tab === "online" || tab === "offline", onClick: () => setTab("live") },
     { label: "Loans", icon: "car" },
     { label: "CIBIL", icon: "gauge" },
     { label: "Report", icon: "doc" },
@@ -249,8 +264,10 @@ function ServiceDock() {
 function TabContent() {
   const { tab } = useNav();
   switch (tab) {
-    case "online":
+    case "live":
       return <Feed />;
+    case "online":
+      return <OnlineAuctions />;
     case "offline":
       return <Offline />;
     case "purchased":
@@ -286,7 +303,7 @@ function OverlayHost({ overlay, z }: { overlay: Overlay; z: number }) {
 
 function Shell() {
   const { stack, tab } = useNav();
-  const immersive = tab === "online" || tab === "offline";
+  const immersive = tab === "live" || tab === "online" || tab === "offline";
   return (
     <div className="phone-screen">
       {immersive ? <FullscreenTopChrome /> : <UtilityTopChrome />}

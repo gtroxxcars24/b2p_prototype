@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FEED_CARS, Car, fmtL } from "../data/cars";
 import { CarMedia } from "../components/CarMedia";
+import { CarPhoto } from "../components/CarPhoto";
 import { Icon } from "../components/Icon";
 import { Button, GuaranteeBadge, SpecChip, GradeBadge, Tag, Sheet, Cars24OwnedBadge } from "../components/ui";
 import { useNav } from "../state/nav";
@@ -37,6 +38,28 @@ function formatAuctionTimer(total: number) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+function filterCars(query: string, filters: Filters) {
+  return FEED_CARS.filter((c) => {
+    const q = query.trim().toLowerCase();
+    if (q && !`${c.make} ${c.model} ${c.variant}`.toLowerCase().includes(q)) return false;
+    if (filters.type !== "all" && c.type !== filters.type) return false;
+    if (filters.fuel !== "all" && c.fuel !== filters.fuel) return false;
+    if (filters.trans !== "all" && c.transmission !== filters.trans) return false;
+    if (filters.grade && c.conditionGrade < filters.grade) return false;
+    if (filters.maxBid && c.minBid > filters.maxBid) return false;
+    return true;
+  });
+}
+
+function requestedCarLabel(query: string, filters: Filters) {
+  return (
+    query.trim() ||
+    `${filters.type !== "all" ? filters.type.toUpperCase() : "Matching"} ${filters.fuel !== "all" ? filters.fuel : ""} ${filters.trans !== "all" ? filters.trans : ""} car`
+      .replace(/\s+/g, " ")
+      .trim()
+  );
+}
+
 export function Feed() {
   const agents = useAgents();
   const { dispatch } = useStore();
@@ -60,21 +83,10 @@ export function Feed() {
     (filters.grade ? 1 : 0) +
     (filters.maxBid ? 1 : 0);
 
-  const cars = FEED_CARS.filter((c) => {
-    const q = query.trim().toLowerCase();
-    if (q && !`${c.make} ${c.model} ${c.variant}`.toLowerCase().includes(q)) return false;
-    if (filters.type !== "all" && c.type !== filters.type) return false;
-    if (filters.fuel !== "all" && c.fuel !== filters.fuel) return false;
-    if (filters.trans !== "all" && c.transmission !== filters.trans) return false;
-    if (filters.grade && c.conditionGrade < filters.grade) return false;
-    if (filters.maxBid && c.minBid > filters.maxBid) return false;
-    return true;
-  });
+  const cars = filterCars(query, filters);
 
   const requestCar = () => {
-    const requested =
-      query.trim() ||
-      `${filters.type !== "all" ? filters.type.toUpperCase() : "Matching"} ${filters.fuel !== "all" ? filters.fuel : ""} ${filters.trans !== "all" ? filters.trans : ""} car`.replace(/\s+/g, " ").trim();
+    const requested = requestedCarLabel(query, filters);
     dispatch({
       type: "REQUEST_CAR",
       make: requested,
@@ -144,6 +156,186 @@ export function Feed() {
       <FilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} filters={filters} setFilters={setFilters} />
     </div>
   );
+}
+
+export function OnlineAuctions() {
+  const agents = useAgents();
+  const { dispatch } = useStore();
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const activeCount =
+    (filters.type !== "all" ? 1 : 0) +
+    (filters.fuel !== "all" ? 1 : 0) +
+    (filters.trans !== "all" ? 1 : 0) +
+    (filters.grade ? 1 : 0) +
+    (filters.maxBid ? 1 : 0);
+  const cars = filterCars(query, filters);
+
+  const requestCar = () => {
+    const requested = requestedCarLabel(query, filters);
+    dispatch({
+      type: "REQUEST_CAR",
+      make: requested,
+      budget: filters.maxBid ? `Up to ${fmtL(filters.maxBid)}` : "Flexible",
+      note: "Notify for online or offline auction availability",
+    });
+    agents.toast("Auction", `Request saved — we'll notify you when ${requested} is listed.`);
+    agents.say("Auction", `I've added ${requested} to requested cars. You'll be notified when a matching vehicle appears in online or offline auction.`);
+  };
+
+  return (
+    <div className="online-auctions-screen">
+      <div className="scroll-area online-auctions-scroll px-4">
+        <div className="online-list-hero">
+          <div>
+            <div className="text-heading-h4-bold text-primary">Online auctions</div>
+            <div className="text-label-3-regular text-secondary">List view for quick scanning, comparison and bidding</div>
+          </div>
+          <div className="online-list-count">
+            <strong>{cars.length}</strong>
+            <span>cars</span>
+          </div>
+        </div>
+
+        <div className="online-search-row">
+          <div className="flex items-center gap-2 flex-1 rounded-full px-3 online-search-pill">
+            <Icon name="search" size={17} className="text-secondary" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search online auction cars"
+              className="flex-1 text-label-2-regular text-primary"
+              style={{ border: "none", outline: "none", background: "transparent", minWidth: 0 }}
+            />
+            {query && (
+              <button onClick={() => setQuery("")} className="press text-tertiary" style={{ border: "none", background: "transparent" }}>
+                <Icon name="close" size={16} />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setFilterOpen(true)}
+            className="press relative flex items-center justify-center rounded-full online-filter-button"
+            style={{ border: activeCount ? "1px solid var(--bg-brand-base)" : "1px solid var(--border-secondary)" }}
+            type="button"
+          >
+            <Icon name="filter" size={18} className={activeCount ? "text-brand-base" : "text-primary"} />
+            {activeCount > 0 && <span className="online-filter-count">{activeCount}</span>}
+          </button>
+        </div>
+
+        {cars.length > 0 ? (
+          <div className="online-car-list">
+            {cars.map((car) => (
+              <OnlineAuctionCard key={car.id} car={car} />
+            ))}
+          </div>
+        ) : (
+          <div className="online-empty-state">
+            <div className="flex items-center justify-center rounded-full bg-secondary" style={{ width: 64, height: 64 }}>
+              <Icon name="search" size={28} className="text-tertiary" />
+            </div>
+            <div className="text-heading-h5-bold text-primary mt-3">No online cars match</div>
+            <div className="text-label-3-regular text-secondary mt-1">Request this car and we will notify you when it enters online or offline auction.</div>
+            <div className="flex flex-col gap-2.5 w-full mt-4">
+              <Button full leftIcon="send" onClick={requestCar}>Request this car</Button>
+              <button onClick={() => { setQuery(""); setFilters(DEFAULT_FILTERS); }} className="press text-label-2-semibold text-brand-base" style={{ border: "none", background: "transparent" }}>
+                Clear search and filters
+              </button>
+            </div>
+          </div>
+        )}
+        <div style={{ height: 116 }} />
+      </div>
+
+      <FilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} filters={filters} setFilters={setFilters} />
+    </div>
+  );
+}
+
+function OnlineAuctionCard({ car }: { car: Car }) {
+  const { push } = useNav();
+  const { state } = useStore();
+  const { openBid } = useBid();
+  const [auctionSeconds, setAuctionSeconds] = useState(() => initialAuctionSeconds(car.id));
+  const highest = state.highest[car.id] ?? car.currentHighest;
+  const won = state.won.includes(car.id);
+  const dealerBid = state.bids[car.id];
+  const activeBidders = onlineActiveBidderCount(car, dealerBid != null);
+  const openDetail = () => push({ name: "car-detail", params: { id: car.id } });
+
+  useEffect(() => {
+    const t = window.setInterval(() => {
+      setAuctionSeconds((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => window.clearInterval(t);
+  }, [car.id]);
+
+  return (
+    <div
+      className="online-car-card press"
+      onClickCapture={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest("button,input,textarea,select,a")) return;
+        openDetail();
+      }}
+    >
+      <button className="online-card-image" onClick={openDetail} type="button">
+        <CarPhoto car={car} height="100%" fit="thumb" />
+        <span className="online-timer-chip">
+          <Icon name="calendar" size={12} />
+          {formatAuctionTimer(auctionSeconds)}
+        </span>
+      </button>
+
+      <div className="online-card-body">
+        <div className="flex items-center gap-1.5 mb-1">
+          {car.type === "owned" ? <Tag tone="success">Owned stock</Tag> : <Tag tone="ocb">OCB</Tag>}
+          {car.demand === "High" && <Tag tone="purple">High demand</Tag>}
+        </div>
+        <button className="online-card-title press" onClick={openDetail} type="button">
+          {car.make} {car.model}
+        </button>
+        <div className="text-label-4-regular text-secondary">
+          {car.variant} · {car.year} · {(car.km / 1000).toFixed(0)}k km
+        </div>
+
+        <div className="online-card-bid-row">
+          <div>
+            <span>Starting bid</span>
+            <strong>{fmtL(car.minBid)}</strong>
+          </div>
+          <div>
+            <span>Highest</span>
+            <strong>{fmtL(highest)}</strong>
+          </div>
+        </div>
+
+        <div className="online-card-meta">
+          <span><Icon name="user" size={12} /> {activeBidders} bidders</span>
+          <span><Icon name="shield" size={12} /> Grade {car.conditionGrade}/5</span>
+        </div>
+
+        <div className="online-card-actions">
+          {won ? (
+            <Button full size="sm" variant="secondary" leftIcon="check" onClick={openDetail}>Won</Button>
+          ) : (
+            <Button full size="sm" leftIcon="bolt" onClick={() => openBid(car.id)}>Bid</Button>
+          )}
+          <button className="press online-card-report" onClick={openDetail} type="button">
+            Report
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function onlineActiveBidderCount(car: Car, hasDealerBid: boolean) {
+  const base = car.demand === "High" ? 16 : car.demand === "Medium" ? 10 : 6;
+  return base + (car.type === "owned" ? 2 : 0) + (hasDealerBid ? 1 : 0);
 }
 
 function FilterSheet({ open, onClose, filters, setFilters }: { open: boolean; onClose: () => void; filters: Filters; setFilters: (f: Filters) => void }) {

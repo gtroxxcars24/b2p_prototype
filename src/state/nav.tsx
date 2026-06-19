@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
-export type Tab = "online" | "offline" | "purchased" | "account";
+export type Tab = "live" | "online" | "offline" | "purchased" | "account";
 
 export interface Overlay {
   name: "car-detail" | "auction-detail" | "book-visit" | "handoff" | "candidates" | "price-intel" | "seller-chat";
@@ -19,7 +19,7 @@ interface NavCtx {
 const Ctx = createContext<NavCtx | null>(null);
 
 export function NavProvider({ children }: { children: React.ReactNode }) {
-  const [tab, setTabState] = useState<Tab>("online");
+  const [tab, setTabState] = useState<Tab>("live");
   const [stack, setStack] = useState<Overlay[]>([]);
 
   const setTab = useCallback((t: Tab) => {
