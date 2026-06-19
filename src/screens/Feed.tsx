@@ -25,6 +25,29 @@ const AUCTION_SECONDS: Record<string, number> = {
   "city-2021": 42 * 60 + 15,
 };
 
+interface LiveComment {
+  dealer: string;
+  text: string;
+}
+
+const LIVE_COMMENTS: Record<string, LiveComment[]> = {
+  "swift-2021": [
+    { dealer: "Metro Cars", text: "Any repaint on the front bumper?" },
+    { dealer: "Rana Auto", text: "Can you show tyre tread once?" },
+    { dealer: "Host", text: "Underbody capture is clean and in report." },
+  ],
+  "creta-2022": [
+    { dealer: "Kohli Motors", text: "Service history authorised?" },
+    { dealer: "Prime Wheels", text: "Can we see rear bumper scratch?" },
+    { dealer: "Host", text: "Paint meter is original on all panels." },
+  ],
+  "nexon-2020": [
+    { dealer: "Apex Cars", text: "Bonnet repaint reading please?" },
+    { dealer: "Sethi Auto", text: "Any engine noise on cold start?" },
+    { dealer: "Host", text: "OBD pass, bonnet repaint shown in report." },
+  ],
+};
+
 function initialAuctionSeconds(id: string) {
   if (AUCTION_SECONDS[id]) return AUCTION_SECONDS[id];
   const seed = id.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
@@ -58,6 +81,14 @@ function requestedCarLabel(query: string, filters: Filters) {
       .replace(/\s+/g, " ")
       .trim()
   );
+}
+
+function liveCommentsFor(car: Car) {
+  return LIVE_COMMENTS[car.id] ?? [
+    { dealer: "North Auto", text: "Please confirm tyre condition." },
+    { dealer: "Galaxy Motors", text: "Is the report live now?" },
+    { dealer: "Host", text: "Full inspection and price intel are available." },
+  ];
 }
 
 export function Feed() {
@@ -308,13 +339,13 @@ function OnlineAuctionCard({ car }: { car: Car }) {
             <strong>{fmtL(car.minBid)}</strong>
           </div>
           <div>
-            <span>Highest</span>
+            <span>Highest bid</span>
             <strong>{fmtL(highest)}</strong>
           </div>
         </div>
 
         <div className="online-card-meta">
-          <span><Icon name="user" size={12} /> {activeBidders} bidders</span>
+          <span><Icon name="user" size={12} /> {activeBidders} active bidders</span>
           <span><Icon name="shield" size={12} /> Grade {car.conditionGrade}/5</span>
         </div>
 
@@ -417,10 +448,24 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
   const ref = useRef<HTMLDivElement>(null);
   const [liked, setLiked] = useState(false);
   const [auctionSeconds, setAuctionSeconds] = useState(() => initialAuctionSeconds(car.id));
+  const [reportOpen, setReportOpen] = useState(false);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [comments, setComments] = useState<LiveComment[]>(() => liveCommentsFor(car));
 
   const openDetail = () => push({ name: "car-detail", params: { id: car.id } });
   const highest = state.highest[car.id] ?? car.currentHighest;
   const won = state.won.includes(car.id);
+  const dealerBid = state.bids[car.id];
+  const activeBidders = onlineActiveBidderCount(car, dealerBid != null);
+  const visibleComments = comments.slice(-2);
+
+  const submitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = commentDraft.trim();
+    if (!text) return;
+    setComments((prev) => [...prev.slice(-4), { dealer: "You", text }]);
+    setCommentDraft("");
+  };
 
   useEffect(() => {
     const t = window.setInterval(() => {
@@ -454,6 +499,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
       style={{ height: "100%" }}
       onClickCapture={(e) => {
         const target = e.target as HTMLElement;
+        if (target.closest(".live-comments,.live-report-panel,.live-report-pip,.live-report-launch,.live-top-badges,.live-bottom-panel")) return;
         if (target.closest("button,input,textarea,select,a")) return;
         openDetail();
       }}
@@ -466,76 +512,82 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
         <CarMedia car={car} />
       </div>
 
-      {/* top overlays */}
-      <div className="absolute" style={{ top: 226, left: 12, right: 12 }}>
-        <div className="flex items-start justify-between">
+      <div className="live-top-badges">
+        <div className="live-tag-stack">
+          <span className="live-status-pill">
+            <span className="live-dot" />
+            Live now
+          </span>
           {car.type === "owned" ? (
             <Cars24OwnedBadge />
           ) : (
-            <span className="rounded-md px-2 py-1 text-label-4-semibold" style={{ background: "rgba(0,0,0,0.45)", color: "#fff" }}>
-              OCB · Consumer
-            </span>
+            <span className="live-source-pill">OCB · Consumer</span>
           )}
-          <div className="flex flex-col items-end gap-2">
-            {car.type === "owned" && <GuaranteeBadge compact />}
-            <button
-              onClick={() => setLiked((v) => !v)}
-              className="press flex items-center justify-center rounded-full"
-              style={{ width: 38, height: 38, background: "rgba(0,0,0,0.4)", border: "none", color: liked ? "#FF4D6D" : "#fff" }}
-            >
-              <Icon name={liked ? "heart-fill" : "heart"} size={20} />
-            </button>
-          </div>
         </div>
+        <button
+          onClick={() => setLiked((v) => !v)}
+          className="press live-icon-action"
+          type="button"
+          aria-label="Save car"
+        >
+          <Icon name={liked ? "heart-fill" : "heart"} size={20} />
+        </button>
       </div>
 
-      {/* bottom content overlay */}
-      <div
-        className="absolute"
-        style={{
-          left: 0,
-          right: 0,
-          bottom: 0,
-          padding: "56px 16px 116px",
-          background: "linear-gradient(to top, rgba(8,8,12,0.98) 0%, rgba(8,8,12,0.92) 34%, rgba(8,8,12,0.52) 76%, transparent)",
-        }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <GradeBadge grade={car.conditionGrade} label={car.conditionLabel} onClick={openDetail} />
-          {car.demand === "High" && <Tag tone="purple">High demand</Tag>}
-          <span className="auction-timer-pill">
-            <Icon name="calendar" size={13} />
-            <span>Ends {formatAuctionTimer(auctionSeconds)}</span>
-          </span>
+      <button className="press live-report-launch" onClick={() => setReportOpen(true)} type="button">
+        <Icon name="doc" size={18} />
+        <span>Report</span>
+      </button>
+
+      <div className="live-comments">
+        <div className="live-comments-feed" aria-live="polite">
+          {visibleComments.map((comment, idx) => (
+            <div className="live-comment-row" key={`${comment.dealer}-${comment.text}-${idx}`}>
+              <strong>{comment.dealer}</strong>
+              <span>{comment.text}</span>
+            </div>
+          ))}
+        </div>
+        <form className="live-comment-form" onSubmit={submitComment}>
+          <Icon name="send" size={14} />
+          <input
+            value={commentDraft}
+            onChange={(e) => setCommentDraft(e.target.value)}
+            placeholder="Ask a live question"
+          />
+          <button type="submit">Ask</button>
+        </form>
+      </div>
+
+      <div className="live-bottom-panel">
+        <div className="live-auction-chips">
+          <span><Icon name="calendar" size={13} /> Ends {formatAuctionTimer(auctionSeconds)}</span>
+          <span><Icon name="shield" size={13} /> {car.conditionGrade}/5 · {car.conditionLabel}</span>
+          {car.demand === "High" && <span>High demand</span>}
         </div>
 
-        <div className="text-heading-h2-bold" style={{ color: "#fff" }}>
-          {car.make} {car.model}
-        </div>
-        <div className="text-label-2-regular mb-2.5" style={{ color: "rgba(255,255,255,0.8)" }}>
-          {car.variant} · {car.year}
-        </div>
+        <button onClick={openDetail} className="press live-title-block" type="button">
+          <div className="text-heading-h2-bold" style={{ color: "#fff" }}>
+            {car.make} {car.model}
+          </div>
+          <div className="text-label-2-regular" style={{ color: "rgba(255,255,255,0.78)" }}>
+            {car.variant} · {car.year} · {(car.km / 1000).toFixed(0)}k km
+          </div>
+        </button>
 
-        <div className="hscroll mb-3" style={{ paddingBottom: 2 }}>
-          <DarkChip icon="gauge" label={`${(car.km / 1000).toFixed(0)}k km`} />
-          <DarkChip icon="fuel" label={car.fuel} />
-          <DarkChip icon="gear" label={car.transmission === "Automatic" ? "Auto" : "Manual"} />
-          <DarkChip icon="shield" label={`Grade ${car.conditionGrade}/5`} />
-        </div>
-
-        <div className="flex items-end justify-between mb-3">
-          <button onClick={openDetail} className="press text-left" style={{ border: "none", background: "transparent" }}>
-            <div className="text-label-4-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
-              Min bid · predicted from market {car.type === "ocb" ? "+ seller quote" : ""}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-heading-h1-bold" style={{ color: "#fff" }}>{fmtL(car.minBid)}</span>
-              <Icon name="info" size={15} style={{ color: "rgba(255,255,255,0.7)" }} />
-            </div>
-            <div className="text-label-4-regular" style={{ color: "rgba(255,255,255,0.6)" }}>
-              Highest {fmtL(highest)} · fair value {fmtL(car.fairValue)}
-            </div>
-          </button>
+        <div className="live-bid-strip">
+          <div>
+            <span>Starting bid</span>
+            <strong>{fmtL(car.minBid)}</strong>
+          </div>
+          <div>
+            <span>Highest bid</span>
+            <strong>{fmtL(highest)}</strong>
+          </div>
+          <div>
+            <span>Active bidders</span>
+            <strong>{activeBidders}</strong>
+          </div>
         </div>
 
         {won ? (
@@ -547,16 +599,80 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
             Place bid
           </Button>
         )}
-
-        <button
-          onClick={openDetail}
-          className="press w-full flex items-center justify-center gap-1 mt-2.5"
-          style={{ border: "none", background: "transparent", color: "rgba(255,255,255,0.85)" }}
-        >
-          <Icon name="doc" size={14} />
-          <span className="text-label-3-semibold">Full condition report & price intel</span>
-        </button>
       </div>
+
+      {reportOpen && (
+        <div className="live-report-backdrop" role="dialog" aria-label="Live condition report">
+          <div className="live-report-pip">
+            <CarPhoto car={car} height="100%" fit="thumb" />
+            <span><span className="live-dot" /> Live PIP</span>
+          </div>
+          <div className="live-report-panel">
+            <div className="live-report-handle" />
+            <div className="live-report-header">
+              <div>
+                <div className="text-heading-h4-bold text-primary">Condition report</div>
+                <div className="text-label-3-regular text-secondary">
+                  Video keeps playing in PIP while you inspect details
+                </div>
+              </div>
+              <button className="press live-report-close" onClick={() => setReportOpen(false)} type="button" aria-label="Close report">
+                <Icon name="close" size={18} />
+              </button>
+            </div>
+
+            <div className="live-report-car">
+              <div>
+                <div className="text-label-4-semibold text-brand-base">{car.type === "owned" ? "CARS24 owned stock" : "OCB consumer car"}</div>
+                <div className="text-heading-h5-bold text-primary">
+                  {car.make} {car.model}
+                </div>
+                <div className="text-label-3-regular text-secondary">
+                  {car.variant} · {car.year} · {(car.km / 1000).toFixed(0)}k km
+                </div>
+              </div>
+              {car.type === "owned" && <GuaranteeBadge compact />}
+            </div>
+
+            <div className="live-report-grid">
+              <div>
+                <span>Grade</span>
+                <strong>{car.conditionGrade}/5</strong>
+              </div>
+              <div>
+                <span>Highest bid</span>
+                <strong>{fmtL(highest)}</strong>
+              </div>
+              <div>
+                <span>Active bidders</span>
+                <strong>{activeBidders}</strong>
+              </div>
+            </div>
+
+            <div className="live-report-section">
+              <div className="text-label-2-semibold text-primary">Inspection highlights</div>
+              <div className="live-report-list">
+                <span><Icon name="check" size={14} /> OBD {car.obd2.status}</span>
+                <span><Icon name="check" size={14} /> {car.paintMeter}</span>
+                <span><Icon name="check" size={14} /> Tyres: {car.tyreTread}</span>
+                <span><Icon name="check" size={14} /> Underbody capture available</span>
+              </div>
+            </div>
+
+            <div className="live-report-section">
+              <div className="text-label-2-semibold text-primary">Price intel</div>
+              <div className="live-report-price-row">
+                <span>Fair value {fmtL(car.fairValue)}</span>
+                <span>Est. resale {fmtL(car.estResale)}</span>
+              </div>
+            </div>
+
+            <Button full variant="secondary" leftIcon="doc" onClick={openDetail}>
+              Open full CDP
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
