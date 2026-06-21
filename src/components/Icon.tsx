@@ -34,6 +34,7 @@ type IconName =
   | "wallet"
   | "bell"
   | "user"
+  | "chat"
   | "send"
   | "plus"
   | "minus"
@@ -183,6 +184,12 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <circle cx="12" cy="8" r="4" />
       <path d="M4 21a8 8 0 0116 0" />
+    </>
+  ),
+  chat: (
+    <>
+      <path d="M21 11.5a8.5 8.5 0 01-9 8.5 9.2 9.2 0 01-3.9-.9L3 20l1.3-4.1A8.5 8.5 0 1121 11.5z" />
+      <path d="M8 10.5h8M8 14h5" />
     </>
   ),
   send: <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />,

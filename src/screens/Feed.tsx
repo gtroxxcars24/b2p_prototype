@@ -617,7 +617,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
             </div>
           )}
           <form className="live-comment-form" onSubmit={submitComment}>
-            <Icon name="send" size={14} />
+            <Icon name="chat" size={15} />
             <input
               value={commentDraft}
               onChange={(e) => setCommentDraft(e.target.value)}
