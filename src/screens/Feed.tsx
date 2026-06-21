@@ -320,52 +320,71 @@ function OnlineAuctionCard({ car }: { car: Car }) {
         openDetail();
       }}
     >
-      <button className="online-card-image" onClick={openDetail} type="button">
+      <div className="online-card-image">
         <CarPhoto car={car} height="100%" fit="thumb" />
+        <span className="online-image-sheen" />
+        <button className="online-save-button press" type="button" aria-label="Save car">
+          <Icon name="heart" size={21} strokeWidth={2.15} />
+        </button>
         <span className="online-timer-chip">
           <Icon name="calendar" size={12} />
           {formatAuctionTimer(auctionSeconds)}
         </span>
-      </button>
+      </div>
 
       <div className="online-card-body">
-        <div className="flex items-center gap-1.5 mb-1">
-          {car.type === "owned" ? <Tag tone="success">Owned stock</Tag> : <Tag tone="ocb">OCB</Tag>}
-          {car.demand === "High" && <Tag tone="purple">High demand</Tag>}
-        </div>
-        <button className="online-card-title press" onClick={openDetail} type="button">
-          {car.make} {car.model}
-        </button>
-        <div className="text-label-4-regular text-secondary">
-          {car.variant} · {car.year} · {(car.km / 1000).toFixed(0)}k km
+        <div className="online-card-badges">
+          {car.type === "owned" ? <Cars24OwnedBadge /> : <Tag tone="ocb">Partner dealer</Tag>}
+          {car.demand === "High" && <span className="online-top-model"><Icon name="star" size={12} /> High demand</span>}
         </div>
 
-        <div className="online-card-bid-row">
-          <div>
+        <div className="online-card-main-row">
+          <div className="online-card-copy">
+            <button className="online-card-title press" onClick={openDetail} type="button">
+              {car.year} {car.make} {car.model}
+            </button>
+            <div className="online-card-variant">{car.variant}</div>
+          </div>
+          <div className="online-card-price">
             <span>Starting bid</span>
             <strong>{fmtL(car.minBid)}</strong>
           </div>
-          <div>
-            <span>Highest bid</span>
-            <strong>{fmtL(highest)}</strong>
-          </div>
         </div>
 
-        <div className="online-card-meta">
-          <span><Icon name="user" size={12} /> {activeBidders} active bidders</span>
-          <span><Icon name="shield" size={12} /> Grade {car.conditionGrade}/5</span>
+        <div className="online-card-specs">
+          <span>{(car.km / 1000).toFixed(0)}k km</span>
+          <span>{car.fuel}</span>
+          <span>{car.transmission}</span>
+          <span>Grade {car.conditionGrade}/5</span>
         </div>
 
-        <div className="online-card-actions">
-          {won ? (
-            <Button full size="sm" variant="secondary" leftIcon="check" onClick={openDetail}>Won</Button>
-          ) : (
-            <Button full size="sm" leftIcon="bolt" onClick={() => openBid(car.id)}>Bid</Button>
-          )}
-          <button className="press online-card-report" onClick={openDetail} type="button">
-            Report
+        <div className="online-card-auction-row">
+          <span><Icon name="user" size={13} /> {activeBidders} active bidders</span>
+          <span><Icon name="gavel" size={13} /> Highest {fmtL(highest)}</span>
+        </div>
+
+        <div className="online-card-benefits">
+          <span><Icon name="shield" size={14} /> Full report</span>
+          <span><Icon name="rotate" size={14} /> 30 days return</span>
+          <span><Icon name="check" size={14} /> 300+ checks</span>
+        </div>
+      </div>
+
+      <div className="online-card-actions">
+        {won ? (
+          <button className="press online-footer-action online-footer-action--primary" onClick={openDetail} type="button">
+            <Icon name="check" size={16} />
+            Won
           </button>
-        </div>
+        ) : (
+          <button className="press online-footer-action online-footer-action--primary" onClick={() => openBid(car.id)} type="button">
+            <Icon name="bolt" size={16} />
+            Place bid
+          </button>
+        )}
+        <button className="press online-footer-action" onClick={openDetail} type="button">
+          View details
+        </button>
       </div>
     </div>
   );
