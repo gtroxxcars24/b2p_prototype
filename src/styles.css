@@ -367,12 +367,17 @@ body {
   position: relative;
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background:
     radial-gradient(95% 54% at 50% -12%, rgba(71, 54, 254, 0.28), transparent 58%),
     linear-gradient(180deg, #EEF3F8 0%, #F7FAFE 100%);
 }
 
 .online-auctions-scroll {
+  flex: 1;
+  min-height: 0;
   padding-top: 204px;
   padding-bottom: 108px;
 }
