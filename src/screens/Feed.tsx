@@ -225,6 +225,33 @@ export function OnlineAuctions() {
 
   return (
     <div className="online-auctions-screen">
+      <div className="feed-search-overlay">
+        <div className="flex items-center gap-2 flex-1 rounded-full px-3 feed-search-pill">
+          <Icon name="search" size={17} className="text-secondary" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search make or model"
+            className="flex-1 text-label-2-regular text-primary"
+            style={{ border: "none", outline: "none", background: "transparent", minWidth: 0 }}
+          />
+          {query && (
+            <button onClick={() => setQuery("")} className="press text-tertiary" style={{ border: "none", background: "transparent" }}>
+              <Icon name="close" size={16} />
+            </button>
+          )}
+        </div>
+        <button
+          onClick={() => setFilterOpen(true)}
+          className="press relative flex items-center justify-center rounded-full feed-filter-button"
+          style={{ border: activeCount ? "1px solid var(--bg-brand-base)" : "1px solid rgba(255,255,255,0.7)" }}
+          type="button"
+        >
+          <Icon name="filter" size={18} className={activeCount ? "text-brand-base" : "text-primary"} />
+          {activeCount > 0 && <span className="online-filter-count">{activeCount}</span>}
+        </button>
+      </div>
+
       <div className="scroll-area online-auctions-scroll px-4">
         <div className="online-list-hero">
           <div>
@@ -235,33 +262,6 @@ export function OnlineAuctions() {
             <strong>{cars.length}</strong>
             <span>cars</span>
           </div>
-        </div>
-
-        <div className="online-search-row">
-          <div className="flex items-center gap-2 flex-1 rounded-full px-3 online-search-pill">
-            <Icon name="search" size={17} className="text-secondary" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search online auction cars"
-              className="flex-1 text-label-2-regular text-primary"
-              style={{ border: "none", outline: "none", background: "transparent", minWidth: 0 }}
-            />
-            {query && (
-              <button onClick={() => setQuery("")} className="press text-tertiary" style={{ border: "none", background: "transparent" }}>
-                <Icon name="close" size={16} />
-              </button>
-            )}
-          </div>
-          <button
-            onClick={() => setFilterOpen(true)}
-            className="press relative flex items-center justify-center rounded-full online-filter-button"
-            style={{ border: activeCount ? "1px solid var(--bg-brand-base)" : "1px solid var(--border-secondary)" }}
-            type="button"
-          >
-            <Icon name="filter" size={18} className={activeCount ? "text-brand-base" : "text-primary"} />
-            {activeCount > 0 && <span className="online-filter-count">{activeCount}</span>}
-          </button>
         </div>
 
         {cars.length > 0 ? (
