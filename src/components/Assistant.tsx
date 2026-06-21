@@ -233,11 +233,15 @@ export function Assistant() {
             borderRadius: "50%",
             background: "#4736FE",
             border: "none",
-            boxShadow: "0 8px 24px rgba(71,54,254,0.45)",
+            boxShadow: "0 8px 22px rgba(71,54,254,0.38)",
             color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
+          aria-label="Open auction chat assistant"
         >
-          <Icon name="sparkle" size={24} />
+          <Icon name="chat" size={25} strokeWidth={2.25} />
           {unread > 0 && (
             <span
               style={{
