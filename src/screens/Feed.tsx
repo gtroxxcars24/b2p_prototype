@@ -382,9 +382,6 @@ function OnlineAuctionCard({ car }: { car: Car }) {
             Place bid
           </button>
         )}
-        <button className="press online-footer-action" onClick={openDetail} type="button">
-          View details
-        </button>
       </div>
     </div>
   );
