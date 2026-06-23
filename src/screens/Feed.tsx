@@ -324,7 +324,7 @@ function OnlineAuctionCard({ car }: { car: Car }) {
         <CarPhoto car={car} height="100%" fit="thumb" />
         <span className="online-image-sheen" />
         <button className="online-save-button press" type="button" aria-label="Save car">
-          <Icon name="heart" size={21} strokeWidth={2.15} />
+          <Icon name="heart" size={16} strokeWidth={2.15} />
         </button>
         <span className="online-timer-chip">
           <Icon name="calendar" size={12} />
@@ -341,9 +341,9 @@ function OnlineAuctionCard({ car }: { car: Car }) {
         <div className="online-card-main-row">
           <div className="online-card-copy">
             <button className="online-card-title press" onClick={openDetail} type="button">
-              {car.year} {car.make} {car.model}
+              {car.make} {car.model}
             </button>
-            <div className="online-card-variant">{car.variant}</div>
+            <div className="online-card-variant">{car.variant} · {car.year}</div>
           </div>
           <div className="online-card-price">
             <span>Starting bid</span>
@@ -355,7 +355,6 @@ function OnlineAuctionCard({ car }: { car: Car }) {
           <span>{(car.km / 1000).toFixed(0)}k km</span>
           <span>{car.fuel}</span>
           <span>{car.transmission}</span>
-          <span>Grade {car.conditionGrade}/5</span>
         </div>
 
         <div className="online-card-auction-row">
