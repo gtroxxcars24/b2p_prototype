@@ -454,7 +454,7 @@ body {
 
 .online-car-card {
   display: grid;
-  grid-template-columns: 98px minmax(0, 1fr);
+  grid-template-columns: 144px minmax(0, 1fr);
   grid-template-rows: auto auto;
   column-gap: 8px;
   padding: 8px;
@@ -469,7 +469,7 @@ body {
   position: relative;
   grid-column: 1;
   grid-row: 1 / span 2;
-  height: 116px;
+  height: 140px;
   overflow: hidden;
   border: none;
   border-radius: 13px;
@@ -483,7 +483,7 @@ body {
 .online-image-sheen {
   position: absolute;
   inset: auto -18px -24px -18px;
-  height: 54px;
+  height: 66px;
   border-radius: 50% 50% 0 0;
   background: rgba(255, 255, 255, 0.76);
   border-top: 1px dashed rgba(148, 163, 184, 0.5);
@@ -540,7 +540,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 6px;
+  gap: 4px;
   min-height: 20px;
   margin-bottom: 4px;
 }
@@ -564,9 +564,9 @@ body {
 .online-top-model {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-height: 19px;
-  padding: 0 6px;
+  padding: 0 5px;
   border-radius: 999px;
   color: #0E7C66;
   background: #E6F8F2;
@@ -579,7 +579,7 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .online-card-copy {
@@ -588,7 +588,7 @@ body {
 
 .online-card-price {
   flex-shrink: 0;
-  min-width: 66px;
+  min-width: 58px;
   text-align: right;
 }
 
@@ -599,7 +599,7 @@ body {
 
 .online-card-price span {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1;
   font-weight: 850;
 }
@@ -607,7 +607,7 @@ body {
 .online-card-price strong {
   margin-top: 4px;
   color: var(--text-primary);
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1;
   font-weight: 950;
 }
@@ -623,7 +623,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.08;
   font-weight: 900;
 }
@@ -631,7 +631,7 @@ body {
 .online-card-variant {
   margin-top: 3px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 9px;
   line-height: 1.1;
   font-weight: 650;
 }
@@ -639,26 +639,26 @@ body {
 .online-card-specs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 3px;
+  margin-top: 5px;
 }
 
 .online-card-specs span {
   color: var(--text-secondary);
   background: #F6F8FB;
   border-radius: 7px;
-  padding: 3px 5px;
-  font-size: 9px;
+  padding: 3px 4px;
+  font-size: 8px;
   line-height: 1;
   font-weight: 750;
 }
 
 .online-card-auction-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 5px;
-  margin-top: 6px;
-  padding-top: 6px;
+  margin-top: 5px;
+  padding-top: 5px;
   border-top: 1px dashed rgba(148, 163, 184, 0.46);
 }
 
@@ -667,12 +667,12 @@ body {
   align-items: center;
   gap: 4px;
   min-width: 0;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0 6px;
   border-radius: 999px;
   color: #4736FE;
   background: #F0EEFF;
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1;
   font-weight: 900;
   white-space: nowrap;
@@ -713,12 +713,12 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   align-self: end;
-  margin-top: 6px;
+  margin-top: 5px;
   border-top: none;
 }
 
 .online-footer-action {
-  min-height: 30px;
+  min-height: 28px;
   min-width: 0;
   display: inline-flex;
   align-items: center;
@@ -728,7 +728,7 @@ body {
   color: var(--text-brand-base);
   background: #fff;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1;
   font-weight: 900;
 }
