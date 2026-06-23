@@ -1958,6 +1958,190 @@ body {
   box-shadow: 0 8px 16px rgba(14, 124, 102, 0.22);
 }
 
+.cdp-diagnostic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.cdp-fact-card {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px;
+  border-radius: 16px;
+  background:
+    radial-gradient(90% 130% at 100% 0%, rgba(71, 54, 254, 0.08), transparent 56%),
+    #F8FAFD;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.cdp-fact-card--featured {
+  grid-column: 1 / -1;
+  align-items: center;
+  background:
+    radial-gradient(82% 140% at 100% 0%, rgba(14, 124, 102, 0.12), transparent 58%),
+    linear-gradient(180deg, #FBFEFF 0%, #F3F8FC 100%);
+}
+
+.cdp-fact-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4736FE;
+  background: #EFECFF;
+}
+
+.cdp-fact-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cdp-fact-copy span,
+.cdp-history-row span,
+.cdp-cost-card small,
+.cdp-audio-copy small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 750;
+}
+
+.cdp-fact-copy strong {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.18;
+  font-weight: 900;
+}
+
+.cdp-good-text {
+  color: #1F6B2A !important;
+}
+
+.cdp-audio-card {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgba(71, 54, 254, 0.11), transparent 58%),
+    #EEF3F8;
+}
+
+.cdp-audio-play {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #5A4BFF 0%, #4736FE 100%);
+  box-shadow: 0 9px 16px rgba(71, 54, 254, 0.24);
+}
+
+.cdp-audio-copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.cdp-audio-copy span {
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.cdp-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cdp-history-row {
+  min-height: 43px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.24fr);
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 14px;
+  background: #F8FAFD;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.cdp-history-row strong {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.16;
+  font-weight: 900;
+  text-align: right;
+}
+
+.cdp-cost-card {
+  margin-top: 10px;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(100% 140% at 100% 0%, rgba(255, 255, 255, 0.22), transparent 50%),
+    linear-gradient(135deg, #211A6B 0%, #4736FE 62%, #0E7C66 100%);
+  box-shadow: 0 14px 28px rgba(71, 54, 254, 0.22);
+}
+
+.cdp-cost-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cdp-cost-card span {
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.cdp-cost-card small {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.cdp-cost-card strong {
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 950;
+}
+
 .owned-support-locked {
   margin-top: 10px;
   display: inline-flex;

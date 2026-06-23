@@ -160,30 +160,47 @@ export function CarDetail({ car }: { car: Car }) {
         </Section>
 
         {/* Diagnostics */}
-        <Section icon="gauge" title="Diagnostics">
-          <Row label="OBD2 scan" value={car.obd2.status === "Pass" ? "Pass · no fault codes" : `Fault: ${car.obd2.codes.join(", ")}`} good={car.obd2.status === "Pass"} />
-          <Row label="Paint meter" value={car.paintMeter} />
-          <Row label="Tyre tread" value={car.tyreTread} />
+        <Section icon="gauge" title="Diagnostics" subtitle="Mechanical signals from the inspection">
+          <div className="cdp-diagnostic-grid">
+            <InspectionFact
+              label="OBD2 scan"
+              value={car.obd2.status === "Pass" ? "Pass · no fault codes" : `Fault: ${car.obd2.codes.join(", ")}`}
+              good={car.obd2.status === "Pass"}
+              icon="gauge"
+              featured
+            />
+            <InspectionFact label="Paint meter" value={car.paintMeter} icon="scan" />
+            <InspectionFact label="Tyre tread" value={car.tyreTread} icon="rotate" />
+          </div>
           {car.hasAudio && (
-            <button className="press flex items-center gap-2 rounded-xl bg-secondary px-3.5 py-3 mt-2 w-full" style={{ border: "none" }}>
-              <div className="flex items-center justify-center rounded-full bg-brand-base" style={{ width: 30, height: 30 }}>
-                <Icon name="play" size={14} className="text-primary-inverse" />
+            <button className="press cdp-audio-card" style={{ border: "none" }}>
+              <div className="cdp-audio-play">
+                <Icon name="play" size={15} className="text-primary-inverse" />
               </div>
-              <span className="text-label-2-semibold text-primary">Play engine / cold-start audio</span>
+              <div className="cdp-audio-copy">
+                <span>Engine / cold-start audio</span>
+                <small>Listen for idle, crank and belt noise</small>
+              </div>
+              <Icon name="chevron" size={15} className="text-secondary" />
             </button>
           )}
         </Section>
 
         {/* History & transparency */}
-        <Section icon="shield" title="History & transparency">
-          <Row label="Challan" value={car.history.challan} good={car.history.challan === "None"} />
-          <Row label="Loan / lien" value={car.history.loan} good={!car.history.loan.toLowerCase().includes("active lien") || car.history.loan.includes("No")} />
-          <Row label="Accident history" value={car.history.accident} good={car.history.accident.toLowerCase().includes("no")} />
-          <Row label="Service history" value={car.history.service} good={car.history.service.toLowerCase().includes("full")} />
-          <Row label="Vaahan" value={car.history.vaahan} good />
-          <div className="flex items-center justify-between rounded-xl bg-brand-subtle px-3.5 py-3 mt-2">
-            <span className="text-label-2-semibold text-primary">Net landed cost</span>
-            <span className="text-heading-h4-bold text-brand-base">{fmtL(car.netLandedCost)}</span>
+        <Section icon="shield" title="History & transparency" subtitle="Docs and risk checks before bidding">
+          <div className="cdp-history-list">
+            <HistoryCheck label="Challan" value={car.history.challan} good={car.history.challan === "None"} />
+            <HistoryCheck label="Loan / lien" value={car.history.loan} good={!car.history.loan.toLowerCase().includes("active lien") || car.history.loan.includes("No")} />
+            <HistoryCheck label="Accident history" value={car.history.accident} good={car.history.accident.toLowerCase().includes("no")} />
+            <HistoryCheck label="Service history" value={car.history.service} good={car.history.service.toLowerCase().includes("full")} />
+            <HistoryCheck label="Vaahan" value={car.history.vaahan} good />
+          </div>
+          <div className="cdp-cost-card">
+            <div>
+              <span>Net landed cost</span>
+              <small>Bid + fees estimate</small>
+            </div>
+            <strong>{fmtL(car.netLandedCost)}</strong>
           </div>
         </Section>
 
@@ -421,6 +438,47 @@ function InspectionTile({ kind, label, tag, hue }: { kind: "underbody" | "engine
         <Icon name="photo" size={13} className="text-secondary" />
         <span className="text-label-3-semibold text-primary">{label}</span>
       </div>
+    </div>
+  );
+}
+
+function InspectionFact({
+  label,
+  value,
+  good,
+  icon,
+  featured,
+}: {
+  label: string;
+  value: string;
+  good?: boolean;
+  icon: IconName;
+  featured?: boolean;
+}) {
+  return (
+    <div className={`cdp-fact-card ${featured ? "cdp-fact-card--featured" : ""}`}>
+      <div className="cdp-fact-icon">
+        <Icon name={icon} size={15} />
+      </div>
+      <div className="cdp-fact-copy">
+        <span>{label}</span>
+        <strong className={good ? "cdp-good-text" : ""}>
+          {good && <Icon name="check" size={13} strokeWidth={2.6} />}
+          {value}
+        </strong>
+      </div>
+    </div>
+  );
+}
+
+function HistoryCheck({ label, value, good }: { label: string; value: string; good?: boolean }) {
+  return (
+    <div className="cdp-history-row">
+      <span>{label}</span>
+      <strong className={good ? "cdp-good-text" : ""}>
+        {good && <Icon name="check" size={13} strokeWidth={2.6} />}
+        {value}
+      </strong>
     </div>
   );
 }
