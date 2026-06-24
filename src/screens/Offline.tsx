@@ -145,31 +145,38 @@ export function Offline() {
         </button>
       </div>
       <div className="scroll-area" style={{ flex: 1 }}>
-        <div className="px-4 pt-3 pb-3">
-          <div
-            style={{
-              borderRadius: 22,
-              padding: "16px 16px 14px",
-              color: "#fff",
-              background:
-                "radial-gradient(90% 120% at 82% 0%, rgba(34,211,238,0.28), transparent 44%), linear-gradient(135deg,#161A33 0%,#4736FE 62%,#0D9488 100%)",
-              boxShadow: "0 18px 38px rgba(71,54,254,0.25)",
-            }}
-          >
-            <div className="text-heading-h3-bold">Elite auctions near you</div>
-            <div className="text-label-3-regular mt-1" style={{ color: "rgba(255,255,255,0.78)" }}>Inspect on-site · bid live · same-day drive-out</div>
-            <div className="grid mt-3" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-              <HeroMetric value="21" label="owned lots" />
-              <HeroMetric value="2" label="this week" />
-              <HeroMetric value="100%" label="inspected" />
+        <div className="offline-overview">
+          <div className="offline-overview-head">
+            <div>
+              <div className="offline-eyebrow">Offline auction desk</div>
+              <div className="offline-title">Venue-ready lots near you</div>
+              <div className="offline-subtitle">Inspect on-site, bid live, stock-out the same day.</div>
             </div>
+            <span className="offline-live-badge">
+              <Icon name="bolt" size={13} />
+              Instant delivery
+            </span>
+          </div>
+          <div className="offline-kpi-grid">
+            <OfflineKpi value={`${AUCTIONS.reduce((sum, a) => sum + auctionCars(a).length, 0)}`} label="cars across lots" />
+            <OfflineKpi value={`${AUCTIONS.length}`} label="confirmed events" />
+            <OfflineKpi value="₹2k" label="refundable visit hold" />
+          </div>
+          <div className="offline-flow-strip">
+            <span>Visit</span>
+            <i />
+            <span>Bid</span>
+            <i />
+            <span>Gate pass</span>
+            <i />
+            <span>Drive out</span>
           </div>
         </div>
         {/* filter row */}
-        <div className="hscroll px-4 py-3 bg-secondary" style={{ position: "sticky", top: 0, zIndex: 5 }}>
-          <button onClick={() => setFiltersOpen(true)} className="press inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-2" style={{ border: "1px solid var(--border-secondary)", flexShrink: 0 }}>
+        <div className="offline-filter-strip no-scrollbar">
+          <button onClick={() => setFiltersOpen(true)} className="press offline-filter-control">
             <Icon name="filter" size={15} className="text-primary" />
-            <span className="text-label-3-semibold text-primary">Filters</span>
+            Filters
           </button>
           <FilterChip label="Near me" active={filters.near} onClick={() => setFilters((f) => ({ ...f, near: !f.near }))} />
           <FilterChip label="Inspected" active={filters.inspected} onClick={() => setFilters((f) => ({ ...f, inspected: !f.inspected }))} />
@@ -177,17 +184,21 @@ export function Offline() {
         </div>
 
         {/* upcoming auctions */}
-        <div className="px-4 pt-1 pb-2">
-          <SectionTitle>Auctions near you</SectionTitle>
+        <div className="offline-section-head">
+          <div>
+            <div className="offline-section-title">Confirmed auctions</div>
+            <div className="offline-section-subtitle">Prioritized by visit distance and stock-out speed</div>
+          </div>
+          <span>{AUCTIONS.length}</span>
         </div>
-        <div className="flex flex-col gap-3 px-4">
+        <div className="offline-auction-list">
           {AUCTIONS.map((a) => (
             <AuctionCard key={a.id} auction={a} booked={state.bookedVisits.includes(a.id)} onClick={() => push({ name: "auction-detail", params: { id: a.id } })} />
           ))}
         </div>
 
         {/* intent-gated candidates */}
-        <div className="px-4 pt-5 pb-2">
+        <div className="px-4 pt-5 pb-2 offline-candidate-head">
           <SectionTitle right={<button onClick={() => push({ name: "candidates" })} className="press text-label-3-semibold text-brand-base" style={{ border: "none", background: "transparent" }}>View all</button>}>
             Help us stock these
           </SectionTitle>
@@ -220,9 +231,18 @@ export function Offline() {
   );
 }
 
+function OfflineKpi({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="offline-kpi">
+      <strong>{value}</strong>
+      <span>{label}</span>
+    </div>
+  );
+}
+
 function FilterChip({ label, active, onClick }: { label: string; active?: boolean; onClick?: () => void }) {
   return (
-    <button onClick={onClick} className="press rounded-full px-3.5 py-2 text-label-3-semibold" style={{ flexShrink: 0, border: active ? "none" : "1px solid var(--border-secondary)", background: active ? "var(--bg-brand-base)" : "var(--bg-primary)", color: active ? "#fff" : "var(--text-primary)" }}>
+    <button onClick={onClick} className={`press offline-filter-chip ${active ? "offline-filter-chip--active" : ""}`}>
       {label}
     </button>
   );
@@ -249,55 +269,40 @@ function AuctionCard({ auction, booked, onClick }: { auction: Auction; booked: b
   return (
     <button
       onClick={onClick}
-      className="press rounded-2xl bg-primary text-left overflow-hidden"
-      style={{
-        border: "1px solid rgba(148,163,184,0.24)",
-        boxShadow: "0 12px 28px rgba(15,23,42,0.08)",
-      }}
+      className="press offline-auction-card"
     >
-      <div style={{ height: 128, position: "relative" }}>
-        <CarLotHero cars={cars} height={128} cells={10} />
-        <div style={{ position: "absolute", top: 10, left: 10 }} className="flex gap-2">
-          {auction.inspected && <Tag tone="success">Inspected ✓</Tag>}
-          {booked && <Tag tone="brand">Booked</Tag>}
-          <Tag tone="purple">Instant delivery</Tag>
-        </div>
-        <div className="auction-focus-bar">
-          <div className="auction-focus-metric">
-            <Icon name="gavel" size={16} />
-            <div>
-              <strong>{cars.length} cars</strong>
-              <span>in this lot</span>
-            </div>
-          </div>
-          <div className="auction-focus-metric">
-            <Icon name="trend" size={16} />
-            <div>
-              <strong>{fmtL(auction.startingPrice)}</strong>
-              <span>starting bid</span>
-            </div>
-          </div>
-        </div>
+      <div className="offline-auction-media">
+        <CarLotHero cars={cars} height={104} cells={10} />
+        <span className="offline-auction-date">{auction.date}</span>
       </div>
-      <div className="p-3.5" style={{ background: "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)" }}>
-        <div className="text-heading-h5-bold text-primary">{auction.title}</div>
-        <div className="flex items-center gap-1.5 mt-1.5">
-          <Icon name="pin" size={14} className="text-secondary" />
-          <span className="text-label-3-regular text-secondary">{auction.venue} · {auction.distanceKm} km</span>
+      <div className="offline-auction-body">
+        <div className="offline-auction-topline">
+          {auction.inspected && <span><Icon name="check" size={12} /> Inspected</span>}
+          <span><Icon name="bolt" size={12} /> Instant delivery</span>
+          {booked && <span className="offline-auction-booked">Booked</span>}
         </div>
-        <div className="flex items-center gap-1.5 mt-1">
-          <Icon name="calendar" size={14} className="text-secondary" />
-          <span className="text-label-3-regular text-secondary">{auction.date} · {auction.time}</span>
+        <div className="offline-auction-title">{auction.title}</div>
+        <div className="offline-auction-meta">
+          <span><Icon name="pin" size={13} /> {auction.venue} · {auction.distanceKm} km</span>
+          <span><Icon name="calendar" size={13} /> {auction.time}</span>
         </div>
-        <div className="flex items-center justify-between mt-3">
+        <div className="offline-auction-metrics">
           <div>
-            <div className="text-label-3-semibold text-primary">{cars.length} inspected cars · starts {fmtL(auction.startingPrice)}</div>
-            <div className="text-label-4-regular text-success-bold">Win at venue · stock-out today</div>
+            <span>Cars in lot</span>
+            <strong>{cars.length}</strong>
           </div>
-          <div className="flex items-center gap-1 text-brand-base">
-            <span className="text-label-3-semibold">{booked ? "View" : "Book visit"}</span>
-            <Icon name="chevron" size={15} />
+          <div>
+            <span>Starting bid</span>
+            <strong>{fmtL(auction.startingPrice)}</strong>
           </div>
+          <div>
+            <span>Stock-out</span>
+            <strong>Today</strong>
+          </div>
+        </div>
+        <div className="offline-auction-footer">
+          <span>Visit fee refundable before 48h</span>
+          <strong>{booked ? "View plan" : "Book visit"} <Icon name="chevron" size={14} /></strong>
         </div>
       </div>
     </button>
