@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FEED_CARS, Car, fmtL } from "../data/cars";
+import { CARS24_SHORTS, Cars24Short } from "../data/cars24Shorts";
 import { CarMedia } from "../components/CarMedia";
 import { CarPhoto } from "../components/CarPhoto";
 import { Icon } from "../components/Icon";
@@ -122,6 +123,10 @@ export function Feed() {
     (filters.maxBid ? 1 : 0);
 
   const cars = filterCars(query, filters);
+  const liveItems = CARS24_SHORTS.map((short, index) => ({
+    short,
+    car: cars[index % Math.max(cars.length, 1)] ?? FEED_CARS[index % FEED_CARS.length],
+  }));
 
   const requestCar = () => {
     const requested = requestedCarLabel(query, filters);
@@ -171,8 +176,8 @@ export function Feed() {
       {/* Snap feed */}
       {cars.length > 0 ? (
         <div className="feed" style={{ flex: 1, height: "100%" }}>
-          {cars.map((car) => (
-            <FeedCard key={car.id} car={car} onView={agents.onCardView} />
+          {liveItems.map(({ car, short }) => (
+            <FeedCard key={short.id} car={car} short={short} onView={agents.onCardView} />
           ))}
         </div>
       ) : (
@@ -463,13 +468,47 @@ function ChipGroup({ label, value, options, onPick }: { label: string; value: st
   );
 }
 
-function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgents>["onCardView"] }) {
+function YouTubeShortMedia({ short }: { short: Cars24Short }) {
+  const [playing, setPlaying] = useState(false);
+  const [thumbnail, setThumbnail] = useState(short.thumbnail);
+
+  return (
+    <div className="youtube-short-media" aria-label={short.title}>
+      {playing ? (
+        <iframe
+          className="youtube-short-frame"
+          src={`https://www.youtube.com/embed/${short.id}?autoplay=1&playsinline=1&rel=0&modestbranding=1&loop=1&playlist=${short.id}`}
+          title={short.title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          loading="lazy"
+        />
+      ) : (
+        <>
+          <img
+            src={thumbnail}
+            alt={short.title}
+            loading="lazy"
+            decoding="async"
+            onError={() => setThumbnail(`https://i.ytimg.com/vi/${short.id}/hqdefault.jpg`)}
+          />
+          <button className="press youtube-short-play-button" type="button" onClick={() => setPlaying(true)}>
+            <Icon name="play" size={24} />
+          </button>
+        </>
+      )}
+      <div className="youtube-short-label">CARS24 Shorts</div>
+    </div>
+  );
+}
+
+function FeedCard({ car, short, onView }: { car: Car; short?: Cars24Short; onView: ReturnType<typeof useAgents>["onCardView"] }) {
   const { push } = useNav();
   const { state } = useStore();
   const { openBid } = useBid();
   const ref = useRef<HTMLDivElement>(null);
   const [liked, setLiked] = useState(false);
-  const [auctionSeconds, setAuctionSeconds] = useState(() => initialAuctionSeconds(car.id));
+  const [auctionSeconds, setAuctionSeconds] = useState(() => initialAuctionSeconds(`${car.id}-${short?.id ?? "live"}`));
   const [reportOpen, setReportOpen] = useState(false);
   const [commentDraft, setCommentDraft] = useState("");
   const [commentFocused, setCommentFocused] = useState(false);
@@ -502,7 +541,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
       setAuctionSeconds((s) => Math.max(0, s - 1));
     }, 1000);
     return () => window.clearInterval(t);
-  }, [car.id]);
+  }, [car.id, short?.id]);
 
   useEffect(() => {
     const seedComments = liveCommentsFor(car);
@@ -549,7 +588,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
         className="absolute inset-0"
         style={{ cursor: "pointer" }}
       >
-        <CarMedia car={car} />
+        {short ? <YouTubeShortMedia short={short} /> : <CarMedia car={car} />}
       </div>
 
       <div className="live-top-badges">
@@ -558,11 +597,9 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
             <span className="live-dot" />
             Live now
           </span>
-          {car.type === "owned" ? (
-            <Cars24OwnedBadge />
-          ) : (
-            <span className="live-source-pill">OCB · Consumer</span>
-          )}
+          <span className="live-source-pill">
+            CARS24 Shorts · {short ? `${short.index}/${CARS24_SHORTS.length}` : "Consumer"}
+          </span>
         </div>
       </div>
 
@@ -590,6 +627,7 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
         </div>
 
         <button onClick={openDetail} className="press live-title-block" type="button">
+          {short && <div className="live-short-caption">{short.title}</div>}
           <div className="text-heading-h2-bold" style={{ color: "#fff" }}>
             {car.make} {car.model}
           </div>
@@ -658,7 +696,11 @@ function FeedCard({ car, onView }: { car: Car; onView: ReturnType<typeof useAgen
       {reportOpen && (
         <div className="live-report-backdrop" role="dialog" aria-label="Live condition report">
           <div className="live-report-pip">
-            <CarPhoto car={car} height="100%" fit="thumb" />
+            {short ? (
+              <img src={short.thumbnail} alt={short.title} />
+            ) : (
+              <CarPhoto car={car} height="100%" fit="thumb" />
+            )}
             <span><span className="live-dot" /> Live PIP</span>
           </div>
           <div className="live-report-panel">
